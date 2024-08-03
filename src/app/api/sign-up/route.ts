@@ -1,13 +1,37 @@
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
+import { signUpSchema } from "@/schemas/signUpSchema";
 import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
   await dbConnect();
 
   try {
-    const { username, email, password } = await request.json();
+    const body = await request.json();
+    const parseResult = signUpSchema.safeParse(body);
+
+    if (!parseResult.success) {
+      return Response.json(
+        {
+          success: false,
+          message: parseResult.error.errors.map((e) => e.message).join(", "),
+        },
+        { status: 400 }
+      );
+    }
+
+    const { username, email, password } = parseResult.data;
+
+    if (!username || !email || !password) {
+      return Response.json(
+        {
+          sucess: false,
+          message: "Please provide the required fields",
+        },
+        { status: 400 }
+      );
+    }
     const existingUserVerifiedByUsername = await UserModel.findOne({
       username,
       isVerified: true,
@@ -36,7 +60,7 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       } else {
-        const hashedPassword = bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
         const expiryDate = new Date();
         expiryDate.setHours(expiryDate.getHours() + 1);
         existingUserByEmail.password = hashedPassword;
@@ -46,7 +70,7 @@ export async function POST(request: Request) {
         await existingUserByEmail.save();
       }
     } else {
-      const hashedPassword = bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
       const expiryDate = new Date();
       expiryDate.setHours(expiryDate.getHours() + 1);
 
