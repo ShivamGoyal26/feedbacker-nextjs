@@ -50,5 +50,14 @@ export async function GET(request: Request) {
       },
       { status: 200 }
     );
-  } catch (error) {}
+  } catch (error) {
+    console.log("Error occured while getting messages", error);
+    return Response.json(
+      {
+        success: true,
+        message: "Unable to get the messages",
+      },
+      { status: 500 }
+    );
+  }
 }
