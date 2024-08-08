@@ -23,15 +23,6 @@ export async function POST(request: Request) {
 
     const { username, email, password } = parseResult.data;
 
-    if (!username || !email || !password) {
-      return Response.json(
-        {
-          sucess: false,
-          message: "Please provide the required fields",
-        },
-        { status: 400 }
-      );
-    }
     const existingUserVerifiedByUsername = await UserModel.findOne({
       username,
       isVerified: true,
@@ -66,6 +57,7 @@ export async function POST(request: Request) {
         existingUserByEmail.password = hashedPassword;
         existingUserByEmail.verifyCode = verifyCode;
         existingUserByEmail.verifyCodeExpiry = expiryDate;
+        existingUserByEmail.username = username;
 
         await existingUserByEmail.save();
       }

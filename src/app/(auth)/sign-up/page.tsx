@@ -40,6 +40,7 @@ const SignUp = () => {
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
+    mode: "onChange",
     defaultValues: {
       email: "",
       password: "",
@@ -47,7 +48,9 @@ const SignUp = () => {
     },
   });
 
-  const { setError, clearErrors } = form;
+  const { setError, clearErrors, formState, getValues } = form;
+
+  console.log("getValues().username", getValues().username);
 
   useEffect(() => {
     const checkUsernameUnique = async () => {
@@ -75,7 +78,7 @@ const SignUp = () => {
       }
     };
     checkUsernameUnique();
-  }, [debouncedUsername, setError]);
+  }, [clearErrors, debouncedUsername, setError]);
 
   const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
     setIsSubmitting(true);
@@ -116,7 +119,15 @@ const SignUp = () => {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel
+                    className={
+                      !formState.errors.username && getValues().username
+                        ? "text-green-500"
+                        : "text-black"
+                    }
+                  >
+                    Username
+                  </FormLabel>
                   <div className="flex items-center rounded-md border border-dark-500">
                     <FormControl className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0">
                       <Input
@@ -143,7 +154,15 @@ const SignUp = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel
+                    className={
+                      !formState.errors.email && getValues().email
+                        ? "text-green-500"
+                        : "text-black"
+                    }
+                  >
+                    Email
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="shivam@feedbacker.com" {...field} />
                   </FormControl>
@@ -165,7 +184,7 @@ const SignUp = () => {
               )}
             />
 
-            <Button type="submit" disabled={isSubmitting}>
+            <Button className="w-full" type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
