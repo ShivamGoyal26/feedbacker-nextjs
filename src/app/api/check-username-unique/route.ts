@@ -14,6 +14,7 @@ export async function GET(request: Request) {
     const queryParam = {
       username: searchParams.get("username"),
     };
+
     // validation with zod
     const result = UsernameQuerySchema.safeParse(queryParam);
 
@@ -23,7 +24,7 @@ export async function GET(request: Request) {
           success: false,
           message: result.error.errors.map((e) => e.message).join(", "),
         },
-        { status: 400 }
+        { status: 200 }
       );
     }
 
@@ -40,7 +41,7 @@ export async function GET(request: Request) {
           success: false,
           message: "username is already taken",
         },
-        { status: 400 }
+        { status: 200 }
       );
     }
 
@@ -49,7 +50,7 @@ export async function GET(request: Request) {
         success: true,
         message: "username is unique",
       },
-      { status: 400 }
+      { status: 200 }
     );
   } catch (error) {
     console.log("error checking username", error);
