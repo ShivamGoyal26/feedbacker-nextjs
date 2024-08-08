@@ -37,7 +37,7 @@ export async function POST(request: Request) {
           success: false,
           message: "Verification code expired, please signup again",
         },
-        { status: 400 }
+        { status: 200 }
       );
     } else {
       return Response.json(
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
           success: false,
           message: "Incorrect verification code",
         },
-        { status: 400 }
+        { status: 200 }
       );
     }
   } catch (error) {
