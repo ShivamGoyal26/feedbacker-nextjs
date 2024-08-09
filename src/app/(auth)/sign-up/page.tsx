@@ -50,8 +50,6 @@ const SignUp = () => {
 
   const { setError, clearErrors, formState, getValues } = form;
 
-  console.log("getValues().username", getValues().username);
-
   useEffect(() => {
     const checkUsernameUnique = async () => {
       if (debouncedUsername) {

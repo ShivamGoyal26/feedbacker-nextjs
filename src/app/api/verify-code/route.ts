@@ -21,6 +21,15 @@ export async function POST(request: Request) {
     const isCodeValid = user.verifyCode === code;
     const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date();
 
+    if (user.isVerified) {
+      return Response.json(
+        {
+          success: true,
+          message: "User account already verified",
+        },
+        { status: 200 }
+      );
+    }
     if (isCodeValid && isCodeNotExpired) {
       user.isVerified = true;
       await user.save();
@@ -37,7 +46,7 @@ export async function POST(request: Request) {
           success: false,
           message: "Verification code expired, please signup again",
         },
-        { status: 400 }
+        { status: 200 }
       );
     } else {
       return Response.json(
@@ -45,7 +54,7 @@ export async function POST(request: Request) {
           success: false,
           message: "Incorrect verification code",
         },
-        { status: 400 }
+        { status: 200 }
       );
     }
   } catch (error) {
